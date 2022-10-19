@@ -1,10 +1,24 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.forms import ModelForm
+from django import forms
 
-from .models import User
+from .models import *
+
+class CreatePost(ModelForm):
+    class Meta:
+        model = Post
+        fields = ('text',)
+    #   widget to manipulate area https://docs.djangoproject.com/en/4.1/ref/forms/widgets/#django.forms.Widget.attrs
+        widgets = {
+          'text': forms.Textarea(attrs={'rows':4}),
+        }
+
+
 
 
 def index(request):
@@ -12,7 +26,11 @@ def index(request):
     main page is homepage where all posts are shown by all users, no restriction
     implement as a card the structure with include, that has body, like button, n likes, username, comments, and timestamp as xyz_time_ago, and edit btn, and history show
     """
-    return render(request, "network/index.html")
+    post_form = CreatePost()
+
+    context = {'post_form':post_form, 'posts': Post.objects.all().order_by('-id')}
+
+    return render(request, "network/index.html", context=context)
 
 
 def login_view(request):
@@ -66,16 +84,24 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-
-def post():
+@login_required
+def post(request):
     """function to register post by user
         GET request shows the format of the modelForm
         POST registers the post after processing
-
         """
-    pass
+    if request.method == 'POST':
+        post = CreatePost(request.POST)
+        if post.is_valid():
+            post.instance.op = request.user
+            post.save()
 
-def profile_page():
+
+    return HttpResponseRedirect(reverse('index'))
+
+
+@login_required
+def user_page(request, id):
     """
     user's profile page, both own or another's
     if own, hide follow btn, show dashboard btn
@@ -83,7 +109,13 @@ def profile_page():
     show n followers
     show all posts descending order
     """
-    pass
+    user_posts = Post.objects.filter(op=id)
+    user_profile = User.objects.filter(id=id).first()
+    print(user_profile)
+    context = {'profile': user_profile, "posts": user_posts}
+    return render(request, 'network/user_page.html', context=context)
+
+
 
 def user_dashboard():
     """
@@ -116,3 +148,4 @@ def follow():
     don't know if via django or Js yet
     """
     pass
+

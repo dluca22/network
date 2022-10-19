@@ -4,6 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    id = models.BigAutoField(primary_key=True)
     # quotes on User because is self referenced / but quotes used for models defined later
     follow = models.ManyToManyField("User", blank=True, related_name="followers")
     # male/female?
@@ -14,6 +15,11 @@ class User(AbstractUser):
 
     # notifications ????
     # email private??
+
+    @property
+    def is_owner(self):
+        return self.id == posts.owner
+
     pass
 
 # class Profile(models.Model):
@@ -33,7 +39,7 @@ class Post(models.Model):
     """model for posts by user, each post is by a User_FK, has text, has Likes_m2m, has comments_FK, has History of text_FK
         #show list of people liking?"""
     id = models.BigAutoField(primary_key=True)
-    op = models.ForeignKey(User, on_delete=models.CASCADE)
+    op = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     text = models.TextField(max_length=250)
     timestamp= models.DateTimeField(auto_now=True)
     # likes = models.ForeignKey(Like,) no, i thing must be related name
@@ -44,6 +50,9 @@ class Post(models.Model):
 
     # category??
     # picture/image??
+    def __str__(self):
+        return f'{self.op.username}: {self.text}'
+
     pass
 
 

@@ -1,0 +1,40 @@
+{%extends 'network/layout.html'%}
+
+{%block body%}
+<!-- only is_authenticated users can see profiles -->
+    {%if user.is_authenticated%}
+        <!-- if profile returns empty queryset (MIGHT CHANGE IN VIEWS TO 404 PAGE) -->
+        {%if not profile%}
+                <div>This profile doesn't exist</div>
+    <!-- ELSE  if profile exists -->
+        {%else%}
+                <div class="row d-flex justify-content-end mb-4">
+                    <div class="col-4">
+                        <p>picture</p>
+                        <p><b>{{profile}}</b></p>
+                        <button class="btn btn-sm btn-success">Follow</button>
+                    </div>
+                    <div class="col-5">
+                        <p><b>Bio</b></p>
+                        <p>bio placeholder</p>
+                    </div>
+                    <!-- button to dasboard accessible only if this user is the owner of the profile -->
+                    {%if profile == user%}
+                        <h4>this is only for the owner</h4> <button class="btn btn-sm btn-dark">Dashboard</button>
+                    {%endif%}
+                </div>
+
+                {%for post in posts%}
+                {% include 'network/post-layout.html'%}
+
+                {%empty%}
+                <p>there are no posts</p>
+                {%endfor%}
+        <!-- endif user doesn't exist -->
+        {%endif%}
+
+    <!-- non authenticated users see error -->
+    {%else%}
+        <h3>You have to <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'register' %}">Register</a> to see a user's profile</h3>
+    {%endif%}
+{%endblock%}

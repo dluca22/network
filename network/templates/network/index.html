@@ -1,5 +1,40 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+<div class="container-fluid justify-content-center">
+    <!-- colonna 75% pagina centrale -->
+    <div class="col-11 col-md-9 col-lg-7 mx-auto">
+
+
+        <!-- in cima textform per nuovo post -->
+        {%if user.is_authenticated%}
+        <div class="container d-flex justify-content-center mb-2">
+            <form action="{%url 'post' %}" method="post">
+                {%csrf_token%}
+                {{post_form.text}}
+                <input type="submit">
+            </form>
+        </div>
+        {%else%}
+        <p>You have to login/register to post</p>
+        {%endif%}
+        <!-- in teoria linea di separazione -->
+
+        <!-- zona post precendti loop, se empy, error message -->
+    {%for post in posts%}
+
+    {% include 'network/post-layout.html'%}
+    {%empty%}
+    <h3>there are no posts</h3>
+    {%endfor%}
+
+    </div>
+
+
+</div>
+
+
+
+
+
 {% endblock %}

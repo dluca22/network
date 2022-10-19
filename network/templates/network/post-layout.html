@@ -1,0 +1,19 @@
+{% load static %}
+
+<div class="card shadow border-info mb-3 mx-auto">
+    <div class="card-body">
+      <div class="row-fluid d-flex justify-content-around">
+            <p class="card-title OP">
+                <a href="{%url 'user' post.op.id%}">{{post.op}}</a>
+            </p>
+            <span class="text-muted"><small>{{post.timestamp}}</small></span>
+            <button class="btn btn-success btn-sm">H</button>
+      </div>
+      <p class="card-text">{{post.text}}</p>
+    </div>
+    <div class="card-footer ">
+        <button class="btn btn-danger btn-sm">&lt;3</button>
+        <button class="btn btn-warning btn-sm">comment</button>
+
+    </div>
+</div>
