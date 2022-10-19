@@ -4,6 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    # quotes on User because is self referenced / but quotes used for models defined later
     follow = models.ManyToManyField("User", blank=True, related_name="followers")
     # male/female?
     # avatar/image
@@ -47,14 +48,15 @@ class Post(models.Model):
 
 
 
-class Follow(models.Model):
+# class Follow(models.Model):
     # table (m2m?) linking an user to another, an user cannot follow self, but can follow others
     # follower_id
     # followee_id
-    pass
+    # pass
 
 class Comment(models.Model):
     # class for comments to post
+    id = models.BigAutoField(primary_key=True)
     text = models.TextField(max_length=250)
     timestamp= models.DateTimeField(auto_now=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -66,6 +68,7 @@ class Comment(models.Model):
 
 class Like(models.Model):
     # model for likes to posts
+    id = models.BigAutoField(primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -74,6 +77,7 @@ class Like(models.Model):
 
 class History(models.Model):
     # model for history of edits to Post text and Comment text
+    id = models.BigAutoField(primary_key=True)
     old_text = models.TextField(max_length=250)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     # comment_id (would id conflic?? maybe 2 models for CommentHistory and PostHistory)
