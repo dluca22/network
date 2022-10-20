@@ -11,21 +11,33 @@
                 <div class="row d-flex justify-content-end mb-4">
                     <div class="col-4">
                         <p>picture</p>
-                        <p><b>{{profile}}</b></p>
-                        <button class="btn btn-sm btn-success">Follow</button>
+                        <p><b>{{profile}}</b>, id = <i>{{profile.id}}</i></p>
+
+                        <p>Followers = {{profile.n_follower}}, Following = {{profile.n_follows}}</p>
+                        {%if profile == user%}
+                        <!-- dasboard button only to owner, onclick change bio div to buttons for edit password, name and bio -->
+                            <button id="dashboard" class="btn btn-sm btn-dark">Dashboard</button>
+                        {%else%}
+                            <button class="btn btn-sm btn-success">Follow</button>
+                        {%endif%}
                     </div>
+                    <!-- colonna nel profilo per bio -->
                     <div class="col-5">
-                        <p><b>Bio</b></p>
-                        <p>bio placeholder</p>
+                        <div id="bio-section">
+                            <p><b>Bio</b></p>
+                            <p>bio placeholder</p>
+                            {%if profile == user%}
+                            <button class="btn btn-sm btn-warning">Edit Bio</button>
+                            {%endif%}
+                        </div>
+
                     </div>
                     <!-- button to dasboard accessible only if this user is the owner of the profile -->
-                    {%if profile == user%}
-                        <h4>this is only for the owner</h4> <button class="btn btn-sm btn-dark">Dashboard</button>
-                    {%endif%}
+
                 </div>
 
                 {%for post in posts%}
-                {% include 'network/post-layout.html'%}
+                {% include 'network/post-card.html'%}
 
                 {%empty%}
                 <p>there are no posts</p>

@@ -28,6 +28,7 @@ def index(request):
     """
     post_form = CreatePost()
 
+
     context = {'post_form':post_form, 'posts': Post.objects.all().order_by('-id')}
 
     return render(request, "network/index.html", context=context)
@@ -100,7 +101,7 @@ def post(request):
     return HttpResponseRedirect(reverse('index'))
 
 
-@login_required
+# not login requried because i added a page section to deal with that in the template
 def user_page(request, id):
     """
     user's profile page, both own or another's
@@ -109,7 +110,7 @@ def user_page(request, id):
     show n followers
     show all posts descending order
     """
-    user_posts = Post.objects.filter(op=id)
+    user_posts = Post.objects.filter(op=id).order_by('-id')
     user_profile = User.objects.filter(id=id).first()
     print(user_profile)
     context = {'profile': user_profile, "posts": user_posts}
@@ -141,11 +142,27 @@ def like():
     """
     pass
 
+@login_required(login_url="/login")
+def following(request):
+    """
+    view to display all posts from people an user follows
+    """
 
-def follow():
-    """
-    allows user to follow another
-    don't know if via django or Js yet
-    """
-    pass
+    friends = request.user.friends
+    friends_posts = []
+    for person in friends:
+        posts = Post.objects.filter(op=person).order_by('-id')
+        if posts:
+            for post in posts:
+                friends_posts.append(post)
+    context = {'posts':friends_posts}
+
+    return render(request, 'network/following.html', context=context)
+
+# def follow():
+#     """
+#     allows user to follow another
+#     don't know if via django or Js yet
+#     """
+#     pass
 

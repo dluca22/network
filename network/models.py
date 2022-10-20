@@ -16,9 +16,20 @@ class User(AbstractUser):
     # notifications ????
     # email private??
 
+
+    # num of people user follows
     @property
-    def is_owner(self):
-        return self.id == posts.owner
+    def n_follows(self):
+        return self.follow.count()
+    # num of people following user
+    @property
+    def n_follower(self):
+        return self.followers.count()
+
+    @property
+    def friends(self):
+        """ returns list of people user is following"""
+        return self.follow.all()
 
     pass
 
@@ -53,7 +64,20 @@ class Post(models.Model):
     def __str__(self):
         return f'{self.op.username}: {self.text}'
 
+    @property
+    def n_likes(self):
+        return self.likes.count()
     pass
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "op":self.op,
+            "text":self.text,
+            "timestamp":self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "likes":self.likes.count()
+        }
+
 
 
 
@@ -78,7 +102,7 @@ class Comment(models.Model):
 class Like(models.Model):
     # model for likes to posts
     id = models.BigAutoField(primary_key=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     pass
