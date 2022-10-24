@@ -14,9 +14,10 @@
       <p class="card-text">{{post.text}}</p>
     </div>
     <div class="card-footer ">
-        <span>Likes ({{post.n_likes}})</span>
+        <span>Likes (<span class="counter">{{post.n_likes}}</span>)</span>
 
         {%if user.is_authenticated%}
+            <!-- TODO set icon -->
             <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">&lt;3</button>
             <button class="btn btn-info btn-sm">comment</button>
         {%else%}

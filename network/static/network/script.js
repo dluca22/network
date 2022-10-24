@@ -15,10 +15,13 @@ function  interact_post(){
     const csrftoken = getCookie('csrftoken');
 
 
+
     // just some styling to practice
     // on mouse enter add shadow, on mouse leave removes it
     const posts = document.querySelectorAll('.post-card');
+
     posts.forEach(post => {
+
         post.addEventListener("mouseenter", function () {
                 post.classList.add("shadow");
         });
@@ -28,15 +31,26 @@ function  interact_post(){
 
         const like = post.querySelector('.like-btn');
         like.onclick = () => {
+            // if user authenticated the btn passes the value for post.id, else, is greyed button with no action
             if (like.value){
-
-                fetch(`/like=${like.value}`, {
+                fetch(`/like`, {
                     method: "PUT",
-                    headers: {'X-CSRFToken': csrftoken},
+                    headers: {'X-CSRFToken': csrftoken,
+                    "Content-Type": "application/json"
+                },
                     mode: 'same-origin',
                     body: JSON.stringify({
                         post_id : like.value
                     })
+                }).then((response) => response.json())
+                .then((data) =>{
+                    // you also have access to data["message"] with liked/unliked post"
+
+                    document.querySelector(".counter").innerText = data['postLikes'] /*or data.postLikes */
+                    // ternary for button change
+                    // TODO change to icon
+                    if (data.message === "liked" ? like.innerHTML = "&lt;/3" : like.innerHTML= "&lt;3");
+
                 });
             };
 

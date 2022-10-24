@@ -18,7 +18,7 @@ class User(AbstractUser):
 
     # num of people user follows
     @property
-    def n_follows(self):
+    def n_friends(self):
         return self.follow.count()
     # num of people following user
     @property
@@ -82,7 +82,8 @@ class Post(models.Model):
             "op":self.op,
             "text":self.text,
             "timestamp":self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            "likes":self.likes.count()
+            "likes":self.n_likes,
+            "liking":self.liking.all().values()
         }
 
 
@@ -114,9 +115,9 @@ class Like(models.Model):
 
     # string representation
     def __str__(self):
-        return f"{self.user.username} likes: {self.post.text}"
+        return f"{self.user.username} likes it"
 
-    
+
     pass
 
 

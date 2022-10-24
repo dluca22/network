@@ -1,24 +1,23 @@
 {%extends 'network/layout.html'%}
 
 {%block body%}
-
+    <!-- {%if user.is_authenticated%} -->
 
     <!-- if user follows at least one -->
-    {%for friend in friends%}
+    {%if user.n_follows > 0%}
 
-        {%for post in friend.posts%}
-
-         <p>{{post}}</p>
+        {%for post in posts%}
+            {% include 'network/post-card.html'%}
         {%empty%}
             <p>No posts from your followers</p>
         {%endfor%}
 
 
     <!-- if user doesn't follow anyone -> message -->
-    {%empty%}
+    {%else%}
         <p>You are not following any user</p>
     <!-- ENDIF user not following anyone -->
-    {%endfor%}
+    {%endif%}
 
 
 

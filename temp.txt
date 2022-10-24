@@ -1,0 +1,10 @@
+
+>>> fr = u3.friends
+>>> fr
+<QuerySet [<User: liuk>, <User: mario>, <User: peach>]>
+>>> for fri in fr:
+...     for post in fri.posts.all():
+...             print(post)
+...
+peach: i'm a bad bitch
+>>>

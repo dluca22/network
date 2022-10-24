@@ -1,12 +1,14 @@
-from tkinter import E
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.forms import ModelForm
 from django import forms
+from django.forms import ModelForm
+
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
 
@@ -29,8 +31,9 @@ def index(request):
     """
     post_form = CreatePost()
 
-
-    context = {'post_form':post_form, 'posts': Post.objects.all().order_by('-id')}
+    posts = Post.objects.all().order_by('-id')
+    # posts = [post.serialize() for post in posts]
+    context = {'post_form':post_form, 'posts': posts }
 
     return render(request, "network/index.html", context=context)
 
@@ -98,7 +101,7 @@ def post(request):
             post.instance.op = request.user
             post.save()
 
-
+# send response status not redirect
     return HttpResponseRedirect(reverse('index'))
 
 
@@ -137,23 +140,29 @@ def edit():
     """
     pass
 
-def like(request, post_id):
+# jsonresponse returns succes 206 meaning only partial data are being sent, also 201 might work, 200 def works, while 204 DOES NOT send back json response datas
+def like(request):
     """
     allows an user to like a post or comment
     """
     if request.method == "PUT":
+
+        data = json.loads(request.body)
+        # post_id = data
+        post_id = data.get('post_id')
+
         post = Post.objects.get(id=post_id)
         # if user is already liking trigger action and return JsonResponse + msg
         if request.user.likes(post_id):
-            print("AAAA")
+            print("unliked")
             # remove like record
             Like.objects.filter(user=request.user, post=post).delete()
-            return JsonResponse({"success": "unliked post."}, status=204)
+            return JsonResponse({"message": "unliked", "postLikes": post.n_likes}, status=206)
         else:
-            print("AAAA")
+            print("liked")
             # add like record
             Like.objects.create(user=request.user, post=post)
-            return JsonResponse({"success": "liked post."}, status=204)
+            return JsonResponse({"message": "liked", "postLikes":post.n_likes}, status=206)
     # if not POST, return error
     else:
         return JsonResponse({"error": "POST request requiredddddd."}, status=400)
@@ -173,7 +182,8 @@ def following(request):
         if posts:
             for post in posts:
                 friends_posts.append(post)
-    context = {'posts':friends_posts}
+    context = {'friends': friends}
+    # context = {'posts':friends_posts}
 
     return render(request, 'network/following.html', context=context)
 
