@@ -145,24 +145,22 @@ def like(request):
     """
     allows an user to like a post or comment
     """
-
     if request.method == "PUT":
 
         data = json.loads(request.body)
         # post_id = data
         post_id = data.get('post_id')
-
         post = Post.objects.get(id=post_id)
         # if user is already liking trigger action and return JsonResponse + msg
-        if request.user.likes(post_id):
+        if request.user in post.liking:
             print("unliked")
             # remove like record
-            Like.objects.filter(user=request.user, post=post).delete()
+            post.like.remove(request.user)
             return JsonResponse({"message": "unliked", "postLikes": post.n_likes}, status=206)
         else:
             print("liked")
             # add like record
-            Like.objects.create(user=request.user, post=post)
+            post.like.add(request.user)
             return JsonResponse({"message": "liked", "postLikes":post.n_likes}, status=206)
     # if not POST, return error
 
@@ -200,10 +198,19 @@ def following(request):
 
     return render(request, 'network/following.html', context=context)
 
-# def follow():
-#     """
-#     allows user to follow another
-#     don't know if via django or Js yet
-#     """
-#     pass
+def follow(request):
+    """
+    allows user to follow another
+    don't know if via django or Js yet
+    """
+    if request.method == "PUT":
+        data= json.loads(request.body)
+        profile_id = data.get("profile_id")
+        profile = User.objects.get(id=profile_id)
+        if profile in request.user.friends:
+            request.user.follow.remove(profile)
+            return JsonResponse({"msg": "removed"}, status=200)
+        else:
+            request.user.follow.add(profile)
+            return JsonResponse({"msg": "added"}, status=200)
 

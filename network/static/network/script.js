@@ -1,13 +1,23 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     // on content loaded
-// start function listening to post interactions
+// start function listening to post interactions for every page
     interact_post()
-    });
 
-// const Post = {
+    // get document url
+    const url = new URL(document.URL);
+    // split on "/"", returns ["", "user", "<num>"], so get 1st
+    base_path = url.pathname.split("/")[1];
+    // if base_path is user, trigger userpage
 
-// }
+    // if base url is "user" run userpage()
+    if (base_path == "user") {userpage()};
+
+    }); /*end DOMcontentoloaded */
+
+// ===================================================================================
+
+
 
 function  interact_post(){
 
@@ -16,34 +26,21 @@ function  interact_post(){
 
 
 
-    // just some styling to practice
-    // on mouse enter add shadow, on mouse leave removes it
     const posts = document.querySelectorAll('.post-card');
 
     posts.forEach(post => {
 
-        const like = post.querySelector('.like-btn');
-
-        fetch(`/like`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("qui")
-                console.log(data)
-                // TODO change to icon
-                if (data.liked ? like.innerHTML = "&lt;/3" : like.innerHTML= "&lt;3");
-            });
-
-
+        // just some styling to practice
+        // on mouse enter add shadow, on mouse leave removes it
         post.addEventListener("mouseenter", function () {
                 post.classList.add("shadow");
         });
         post.addEventListener("mouseleave", function () {
                 post.classList.remove("shadow");
         });
-
+        // select the post like btn
+        const like = post.querySelector('.like-btn');
         like.onclick = () => {
-
-
 
             // if user authenticated the btn passes the value for post.id, else, is greyed button with no action
             if (like.value){
@@ -64,17 +61,40 @@ function  interact_post(){
                     // ternary for button change
                     // TODO change to icon
                     if (data.message === "liked" ? like.innerHTML = "&lt;/3" : like.innerHTML= "&lt;3");
+                });/*end fetch PUT request like */
+            }; /*end if like is not greyed out*/
+        }/* end like.onclick */
 
-                });
-            };
+    }); /*end for each post */
 
+};/* end interact_post()*/
 
-        }
+// ===================================================================================
 
+// function to manage userapage both for others and self
+function userpage(){
+    const follow = document.querySelector(".follow-btn")
 
-    });
+    follow.onclick = () =>{
+        fetch(`/follow`,{
+            method: "PUT",
+            headers: {'X-CSRFToken': getCookie('csrftoken'),
+                    "Content-Type": "application/json"},
+            mode: 'same-origin',
+            body : JSON.stringify({
+                profile_id : follow.value
+            })
+        }).then((response) => response.json())
+        .then((result)=> {
+            if(result.msg == "added" ? follow.innerHTML = "Unfollow" : follow.innerHTML="Follow");
+            // TODO either change the color with class, or have 2 buttons in userpage toggling hide/block, or use an icon
+        });
 
 };
+}
+
+
+// ===================================================================================
 
 
 // this function from django docs scans the cookies and returns a cookieValue dictionary

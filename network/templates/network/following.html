@@ -7,7 +7,6 @@
     {%if user.n_friends > 0%}
 
         {%for post in posts%}
-        <div> qua {{post.op_id}}</div>
             {% include 'network/post-card.html'%}
         {%empty%}
             <p>No posts from your followers</p>

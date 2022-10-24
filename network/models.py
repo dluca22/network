@@ -2,19 +2,11 @@ from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
+# ===============================================================
 class User(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     # quotes on User because is self referenced / but quotes used for models defined later
     follow = models.ManyToManyField("User", blank=True, related_name="followers")
-    # male/female?
-    # avatar/image
-    # interests?
-    # follower
-    # following
-
-    # notifications ????
-    # email private??
 
     # num of people user follows
     @property
@@ -33,12 +25,13 @@ class User(AbstractUser):
     def likes(self, post_id):
         """ user.likes(post.id) returns true if user has instance of like on this post"""
         try:
-            self.liked.get(post_id=post_id)
+            self.liked.get(id=post_id)
             return True
         except:
             return False
 
     pass
+# ===============================================================
 
 # class Profile(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -52,6 +45,7 @@ class User(AbstractUser):
 #     #                                     blank=True)
 #     pass
 
+# ===============================================================
 
 class Post(models.Model):
     """model for posts by user, each post is by a User_FK, has text, has Likes_m2m, has comments_FK, has History of text_FK
@@ -60,7 +54,7 @@ class Post(models.Model):
     op = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     text = models.TextField(max_length=250)
     timestamp= models.DateTimeField(auto_now=True)
-    # likes = models.ForeignKey(Like,) no, i thing must be related name
+    like = models.ManyToManyField("User", blank=True, related_name="liked")
     # comments = i think must be related name
     # history = related name
 
@@ -73,8 +67,11 @@ class Post(models.Model):
 
     @property
     def n_likes(self):
-        return self.liking.count()
-    pass
+        return self.like.count()
+
+    @property
+    def liking(self):
+        return self.like.all()
 
     def serialize(self):
         return{
@@ -85,15 +82,10 @@ class Post(models.Model):
             "likes":self.n_likes,
             "liking":self.liking.all().values()
         }
+    pass
 
+# ===============================================================
 
-
-
-# class Follow(models.Model):
-    # table (m2m?) linking an user to another, an user cannot follow self, but can follow others
-    # follower_id
-    # followee_id
-    # pass
 
 class Comment(models.Model):
     # class for comments to post
@@ -105,20 +97,9 @@ class Comment(models.Model):
 
 
     pass
+# ===============================================================
 
 
-class Like(models.Model):
-    # model for likes to posts
-    id = models.BigAutoField(primary_key=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="liking")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked")
-
-    # string representation
-    def __str__(self):
-        return f"{self.user.username} likes it"
-
-
-    pass
 
 
 class History(models.Model):
@@ -130,6 +111,16 @@ class History(models.Model):
 
     pass
 
+# class Like(models.Model):
+#     # model for likes to posts
+#     id = models.BigAutoField(primary_key=True)
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="liking")
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked")
+
+#     # string representation
+#     def __str__(self):
+#         return f"{self.user.username} likes it"
+#     pass
 
 # ======= others ========
 # class Interests(models.Model):
