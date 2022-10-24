@@ -22,6 +22,18 @@ function  interact_post(){
 
     posts.forEach(post => {
 
+        const like = post.querySelector('.like-btn');
+
+        fetch(`/like`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("qui")
+                console.log(data)
+                // TODO change to icon
+                if (data.liked ? like.innerHTML = "&lt;/3" : like.innerHTML= "&lt;3");
+            });
+
+
         post.addEventListener("mouseenter", function () {
                 post.classList.add("shadow");
         });
@@ -29,8 +41,10 @@ function  interact_post(){
                 post.classList.remove("shadow");
         });
 
-        const like = post.querySelector('.like-btn');
         like.onclick = () => {
+
+
+
             // if user authenticated the btn passes the value for post.id, else, is greyed button with no action
             if (like.value){
                 fetch(`/like`, {
@@ -46,7 +60,7 @@ function  interact_post(){
                 .then((data) =>{
                     // you also have access to data["message"] with liked/unliked post"
 
-                    document.querySelector(".counter").innerText = data['postLikes'] /*or data.postLikes */
+                    post.querySelector(".counter").innerText = data['postLikes'] /*or data.postLikes */
                     // ternary for button change
                     // TODO change to icon
                     if (data.message === "liked" ? like.innerHTML = "&lt;/3" : like.innerHTML= "&lt;3");

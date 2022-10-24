@@ -6,7 +6,7 @@
       <div class="row-fluid d-flex justify-content-around">
             <p class="card-title OP">
                 <!-- username is a link to profile -->
-                <a href="{%url 'user' post.op.id%}">{{post.op}}</a>
+                <a href="{%url 'user' post.op_id%}">{{post.op}}</a>
             </p>
             <span class="text-muted"><small>{{post.timestamp}}</small></span>
             <button class="btn btn-success btn-sm">H</button>
@@ -18,7 +18,7 @@
 
         {%if user.is_authenticated%}
             <!-- TODO set icon -->
-            <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">&lt;3</button>
+            <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}"></button>
             <button class="btn btn-info btn-sm">comment</button>
         {%else%}
             <button class="btn btn-secondary btn-sm like-btn" >&lt;3</button>

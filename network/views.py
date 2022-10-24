@@ -145,6 +145,7 @@ def like(request):
     """
     allows an user to like a post or comment
     """
+
     if request.method == "PUT":
 
         data = json.loads(request.body)
@@ -164,8 +165,17 @@ def like(request):
             Like.objects.create(user=request.user, post=post)
             return JsonResponse({"message": "liked", "postLikes":post.n_likes}, status=206)
     # if not POST, return error
+
+    elif request.method == "GET":
+        liked_posts = request.user.liked.values()
+        print("liked_posts")
+        print(liked_posts)
+        # return JsonResponse({"liked": liked_posts }, status=200)
+
+        return JsonResponse({"error": "only GET and PUT requests are accepted."}, status=200)
+
     else:
-        return JsonResponse({"error": "POST request requiredddddd."}, status=400)
+        return JsonResponse({"error": "only GET and PUT requests are accepted."}, status=400)
 
     pass
 
@@ -174,15 +184,18 @@ def following(request):
     """
     view to display all posts from people an user follows
     """
-
+# get qset of friends of user (who user follows)
     friends = request.user.friends
+# set dict and for each friend get friend post, if present, append to dict
     friends_posts = []
-    for person in friends:
-        posts = Post.objects.filter(op=person).order_by('-id')
+    for friend in friends:
+        # must be .all() for queryset instead of .values() for dictionary
+        posts = friend.posts.all().order_by('-id')
         if posts:
             for post in posts:
                 friends_posts.append(post)
-    context = {'friends': friends}
+
+    context = {'posts': friends_posts}
     # context = {'posts':friends_posts}
 
     return render(request, 'network/following.html', context=context)
