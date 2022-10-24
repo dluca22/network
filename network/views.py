@@ -1,7 +1,8 @@
+from tkinter import E
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
@@ -136,10 +137,27 @@ def edit():
     """
     pass
 
-def like():
+def like(request, post_id):
     """
     allows an user to like a post or comment
     """
+    if request.method == "PUT":
+        post = Post.objects.get(id=post_id)
+        # if user is already liking trigger action and return JsonResponse + msg
+        if request.user.likes(post_id):
+            print("AAAA")
+            # remove like record
+            Like.objects.filter(user=request.user, post=post).delete()
+            return JsonResponse({"success": "unliked post."}, status=204)
+        else:
+            print("AAAA")
+            # add like record
+            Like.objects.create(user=request.user, post=post)
+            return JsonResponse({"success": "liked post."}, status=204)
+    # if not POST, return error
+    else:
+        return JsonResponse({"error": "POST request requiredddddd."}, status=400)
+
     pass
 
 @login_required(login_url="/login")

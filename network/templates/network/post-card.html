@@ -14,9 +14,14 @@
       <p class="card-text">{{post.text}}</p>
     </div>
     <div class="card-footer ">
-        <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">&lt;3</button>
         <span>Likes ({{post.n_likes}})</span>
-        <button class="btn btn-info btn-sm">comment</button>
 
+        {%if user.is_authenticated%}
+            <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">&lt;3</button>
+            <button class="btn btn-info btn-sm">comment</button>
+        {%else%}
+            <button class="btn btn-secondary btn-sm like-btn" >&lt;3</button>
+            <button class="btn btn-secondary btn-sm">comment</button>
+        {%endif%}
     </div>
 </div>

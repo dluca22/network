@@ -16,7 +16,6 @@ class User(AbstractUser):
     # notifications ????
     # email private??
 
-
     # num of people user follows
     @property
     def n_follows(self):
@@ -30,6 +29,14 @@ class User(AbstractUser):
     def friends(self):
         """ returns list of people user is following"""
         return self.follow.all()
+
+    def likes(self, post_id):
+        """ user.likes(post.id) returns true if user has instance of like on this post"""
+        try:
+            self.liked.get(post_id=post_id)
+            return True
+        except:
+            return False
 
     pass
 
@@ -66,7 +73,7 @@ class Post(models.Model):
 
     @property
     def n_likes(self):
-        return self.likes.count()
+        return self.liking.count()
     pass
 
     def serialize(self):
@@ -102,9 +109,14 @@ class Comment(models.Model):
 class Like(models.Model):
     # model for likes to posts
     id = models.BigAutoField(primary_key=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="liking")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked")
 
+    # string representation
+    def __str__(self):
+        return f"{self.user.username} likes: {self.post.text}"
+
+    
     pass
 
 
