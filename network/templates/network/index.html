@@ -24,7 +24,7 @@
         </section>
         <!-- in teoria linea di separazione -->
 <hr>
-
+<section class="section-posts">
         <!-- zona post precendti loop, se empy, error message -->
     {%for post in page_obj%}
 
@@ -51,7 +51,7 @@
                 {% endif %}
                     <!-- current -->
                     <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.number}}</a></li>
-                    
+
                 {% if page_obj.has_next %}
                 <!-- next page if present -->
                     <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
@@ -63,7 +63,7 @@
 
 </div>
 
-
+</section>
 
 
 

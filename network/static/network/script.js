@@ -245,23 +245,50 @@ function follow_toggle(follow) {
 
 function delete_post(del, post){
     del.onclick = () => {
-        fetch('/deletepost',{
-            method: "DELETE",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Content-Type": "application/json",
-              },
-              mode: "same-origin",
-              body: JSON.stringify({
-                post_id: del.value,
-            }),
-        }).then((response) => response.json())
-        .then((data) =>{
-            post.style.display="none";
-        });
+
+        del.style.display = "none"
+        const confirm_box = document.createElement("span")
+        confirm_box.innerHTML = "<span class='confirm-dialog'> Are you sure?\
+        <button class='btn btn-success btn-sm rounded-pill' value= true>Yes</button>\
+        <button class='btn btn-danger btn-sm rounded-pill' value=false>No</button>\
+        </span>"
+        del.insertAdjacentElement('afterend', confirm_box)
+        let confirm = document.querySelector('[value=true]')
+        let dismiss = document.querySelector('[value=false]')
+        confirm.onclick = () =>{
+            fetch('/deletepost',{
+                method: "DELETE",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json",
+                },
+                mode: "same-origin",
+                body: JSON.stringify({
+                    post_id: del.value,
+                }),
+            }).then((response) => response.json())
+            .then((data) =>{
+                confirm_box.remove();
+                post.style.display="none";
+            });
+        }
+
+        dismiss.onclick= () =>{
+            del.style.display = "inline";
+            post.style.display = "block";
+            confirm_box.remove();
+            return false;
+        }
+
+
+
 
     }
 };
+
+
+
+
 
 
 // ========= old code =======
