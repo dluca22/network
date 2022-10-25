@@ -13,9 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (base_path == "user") {
     userpage();
   }
-  else if (base_path == ""){
-    index();
-  }
+
 }); /*end DOMcontentoloaded */
 
 // ===================================================================================
@@ -37,6 +35,11 @@ function interact_post() {
     if (edit){
         edit_post(edit, post);
     };
+    const del = post.querySelector(".delete-btn");
+    if(del){
+        delete_post(del, post);
+    }
+
   }); /*end for each post */
 } /* end interact_post()*/
 
@@ -148,6 +151,9 @@ function follow_toggle(follow) {
  function edit_post(edit, post){
     // when edit is clicked create textarea precompiled with old text, on submit send fetch request, then remove text area and display post text
     edit.onclick = () =>{
+        // after clicking set disabled (while function is in execution), so that multiple click don't keep appending edit text area
+        edit.disabled= true;
+
         // get the current post text and hide it
         const old_text = post.querySelector(".post-text");
         old_text.style.display = "none";
@@ -190,6 +196,8 @@ function follow_toggle(follow) {
 
         // if save is clicked
         save_edit.onclick = () =>{
+            // after saving (finish execution) re enables the edit button, so that it can be clicked again
+            edit.disabled=false;
             // if edit_area is null, remove the edit section and display the old text
             if(!edit_area.value ){
                 edit_div.remove();
@@ -235,15 +243,24 @@ function follow_toggle(follow) {
 
 // ===================================================================================
 
-function index(){
-    // REMOVE? there is no need for not reloading the page after new post
+function delete_post(del, post){
+    del.onclick = () => {
+        fetch('/deletepost',{
+            method: "DELETE",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/json",
+              },
+              mode: "same-origin",
+              body: JSON.stringify({
+                post_id: del.value,
+            }),
+        }).then((response) => response.json())
+        .then((data) =>{
+            post.style.display="none";
+        });
 
-
-    // const post_form = document.querySelector("#post_form")
-    // post_form.onsubmit = () => {
-
-    //   console.log("Helo bishes")
-    // };
+    }
 };
 
 

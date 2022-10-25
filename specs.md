@@ -17,9 +17,9 @@ https://cs50.harvard.edu/web/2020/projects/4/network/
     ~~* only signed in users~~
     ~~* toggle follow/unfollow~~
 
-5. Pagination
-    display 10 at a time, then after 10, a Next> btn for second page
-    * after second page must be 2 btns <Previous||Next>
+~~5. Pagination~~
+    ~~display 10 at a time, then after 10, a Next> btn for second page~~
+    ~~* after second page must be 2 btns <Previous||Next>~~
 ~~6. Edit Posts~~
     ~~* user can edit own posts with edit button, then the body of post, replaced with textarea precompiled~~
     ~~* save post without refreshing page with JavaScript~~

@@ -42,7 +42,7 @@
         </button>
         <button class="comment-btn btn btn-info btn-sm">comment</button>
         {%if request.user == post.op%}
-        <button class="delete-btn btn btn-dark rounded-pill btn-sm">Del</button>
+        <button class="delete-btn btn btn-dark rounded-pill btn-sm" value="{{post.id}}">Del</button>
         <button class="edit-btn btn btn-secondary rounded-pill btn-sm" value="{{post.id}}">edit</button>
 
         {%endif%}

@@ -24,17 +24,41 @@
         </section>
         <!-- in teoria linea di separazione -->
 <hr>
-<p>{{posts |length}}</p>
-        <!-- zona post precendti loop, se empy, error message -->
-    {%for post in posts%}
 
+        <!-- zona post precendti loop, se empy, error message -->
+    {%for post in page_obj%}
 
     {% include 'network/post-card.html'%}
+
+
+
+    </div>
+
     {%empty%}
     <h3>there are no posts</h3>
     {%endfor%}
 
-    </div>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end">
+
+            <!-- go to first -->
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo;</a>
+            </li>
+            {% if page_obj.has_previous%}
+            <!-- previous page if present -->
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+                {% endif %}
+                    <!-- current -->
+                    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.number}}</a></li>
+                    
+                {% if page_obj.has_next %}
+                <!-- next page if present -->
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                {% endif %}
+          </ul>
+        </nav>
 
 
 </div>

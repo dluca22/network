@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from django.core.paginator import Paginator
 from django.forms import ModelForm
 
 from django.views.decorators.csrf import csrf_exempt
@@ -32,8 +33,13 @@ def index(request):
     post_form = CreatePost()
 
     posts = Post.objects.all().order_by('-id')
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # posts = [post.serialize() for post in posts]
-    context = {'post_form':post_form, 'posts': posts }
+    context = {'post_form':post_form, 'page_obj': page_obj }
 
     return render(request, "network/index.html", context=context)
 
@@ -120,6 +126,19 @@ def user_page(request, id):
     context = {'profile': user_profile, "posts": user_posts}
     return render(request, 'network/user_page.html', context=context)
 
+# ajax request as DELETE method to delete the post and send back jsonresponse
+def delete_post(request):
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        post_id = data.get('post_id')
+        post = Post.objects.get(id=post_id)
+        # server side checking request user is owner
+        if request.user == post.op:
+            post.delete()
+            return JsonResponse({"message":"deleted"}, status = 200)
+        else:
+            return JsonResponse({"error":"You are not the post owner"}, status = 403)
+
 
 
 def user_dashboard():
@@ -167,7 +186,7 @@ def like(request):
     if request.method == "PUT":
 
         data = json.loads(request.body)
-        # post_id = data
+
         post_id = data.get('post_id')
         post = Post.objects.get(id=post_id)
         # if user is already liking trigger action and return JsonResponse + msg
