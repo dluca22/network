@@ -122,6 +122,7 @@ function like_toggle(like, post) {
 // ===================================================================================
 
 function follow_toggle(follow) {
+    // onclick sends put request to follow or unfollow based on being yet a follower or not
   follow.onclick = () => {
     fetch(`/follow`, {
       method: "PUT",
@@ -131,21 +132,24 @@ function follow_toggle(follow) {
       },
       mode: "same-origin",
       body: JSON.stringify({
+        // follow button has value of post id and sends to API
         profile_id: follow.value,
       }),
-    })
-      .then((response) => response.json())
+    }).then((response) => response.json())
       .then((data) => {
+        // updates the followers counter from API response
         document.querySelector(".n_followers").innerHTML = data.n_followers;
-        if (
-          data.msg == "added"
-            ? (follow.innerHTML = "Unfollow")
-            : (follow.innerHTML = "Follow")
-        );
+        if (data.msg == "added"){
+          follow.innerHTML = "Unfollow";
+          follow.classList.replace("btn-success", "btn-warning");
+
+        }else{
+            (follow.innerHTML = "Follow");
+              follow.classList.replace("btn-warning", "btn-success");};
+    });
         // TODO either change the color with class, or have 2 buttons in userpage toggling hide/block, or use an icon
-      });
-  };
-}; /*end of follow function abstraction*/
+      };
+  };/*end of follow function abstraction*/
 
 // ===================================================================================
  function edit_post(edit, post){
@@ -231,8 +235,8 @@ function follow_toggle(follow) {
 
                     }
                 });
-            // qui
-        } //end else edit_area NOT null, or NOT cancel clicked
+
+        } //end confitional edit_area NOT null, or cancel NOT clicked
         };
             return false;
 
@@ -245,16 +249,20 @@ function follow_toggle(follow) {
 
 function delete_post(del, post){
     del.onclick = () => {
-
-        del.style.display = "none"
-        const confirm_box = document.createElement("span")
+        // on click, hide delete button
+        del.style.display = "none";
+        // create a span as dialog for delete confirmation with 2 buttons
+        const confirm_box = document.createElement("span");
         confirm_box.innerHTML = "<span class='confirm-dialog'> Are you sure?\
         <button class='btn btn-success btn-sm rounded-pill' value= true>Yes</button>\
         <button class='btn btn-danger btn-sm rounded-pill' value=false>No</button>\
-        </span>"
-        del.insertAdjacentElement('afterend', confirm_box)
-        let confirm = document.querySelector('[value=true]')
-        let dismiss = document.querySelector('[value=false]')
+        </span>";
+        // insert dialog span in place of del button (after it but del button is set to hiding)
+        del.insertAdjacentElement('afterend', confirm_box);
+        let confirm = document.querySelector('[value=true]');
+        let dismiss = document.querySelector('[value=false]');
+
+        // if confirm button click, send fetch request
         confirm.onclick = () =>{
             fetch('/deletepost',{
                 method: "DELETE",
@@ -268,23 +276,21 @@ function delete_post(del, post){
                 }),
             }).then((response) => response.json())
             .then((data) =>{
+                // remove confirm box, otherwise will interfere with next delete
                 confirm_box.remove();
+                // hide the post removed
                 post.style.display="none";
             });
-        }
+        }; /* end of confirm click */
 
+        // if delete NOT confirmed show delete button again, remove confirm dialog
         dismiss.onclick= () =>{
             del.style.display = "inline";
-            post.style.display = "block";
             confirm_box.remove();
             return false;
-        }
-
-
-
-
-    }
-};
+        }; /*end of dismiss click */
+    }/*end of del onclick */
+};/* end of delete_post()*/
 
 
 

@@ -28,6 +28,10 @@ https://cs50.harvard.edu/web/2020/projects/4/network/
    ~~ w/ javascript asynconously update the like count via fetch, w/o refresh~~ (1,5 days)
 
 
+## extra
+1. added delete button
+1.5 added confirmation on delete
+
 ## Hints
 
 * For examples of JavaScript fetch calls, you may find some of the routes in Project 3 useful to reference.
