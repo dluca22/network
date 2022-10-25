@@ -8,22 +8,26 @@
 
 
         <!-- in cima textform per nuovo post -->
-        {%if user.is_authenticated%}
-        <div class="container d-flex justify-content-center mb-2">
-            <form action="{%url 'post' %}" method="post">
-                {%csrf_token%}
-                {{post_form.text}}
-                <input type="submit">
-            </form>
-        </div>
-        {%else%}
-        <p>You have to login/register to post</p>
-        {%endif%}
-        <!-- in teoria linea di separazione -->
+        <section id="post_section">
+            {%if user.is_authenticated%}
+            <div class="container d-flex justify-content-center mb-2">
+                <form id = post_form action="{%url 'post' %}" method="post">
+                    {%csrf_token%}
+                    {{post_form.text}}
+                    <input type="submit">
+                </form>
+            </div>
+            {%else%}
+            <p>You have to login/register to post</p>
+            {%endif%}
 
+        </section>
+        <!-- in teoria linea di separazione -->
+<hr>
+<p>{{posts |length}}</p>
         <!-- zona post precendti loop, se empy, error message -->
     {%for post in posts%}
-    
+
 
     {% include 'network/post-card.html'%}
     {%empty%}

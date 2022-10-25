@@ -11,16 +11,19 @@ class User(AbstractUser):
     # num of people user follows
     @property
     def n_friends(self):
-        return self.follow.count()
+        return self.followers.count()
+    # LIST of people user follows
+    @property
+    def friends(self):
+        """ returns list of people user is following"""
+        return self.follow.all()
+
+
     # num of people following user
     @property
     def n_follower(self):
         return self.followers.count()
 
-    @property
-    def friends(self):
-        """ returns list of people user is following"""
-        return self.follow.all()
 
     def likes(self, post_id):
         """ user.likes(post.id) returns true if user has instance of like on this post"""
@@ -52,7 +55,7 @@ class Post(models.Model):
         #show list of people liking?"""
     id = models.BigAutoField(primary_key=True)
     op = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
-    text = models.TextField(max_length=250)
+    text = models.TextField(max_length=140)
     timestamp= models.DateTimeField(auto_now=True)
     like = models.ManyToManyField("User", blank=True, related_name="liked")
     # comments = i think must be related name

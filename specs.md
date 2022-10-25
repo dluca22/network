@@ -14,15 +14,16 @@ https://cs50.harvard.edu/web/2020/projects/4/network/
    ~~ * all posts of this user in recent order~~
     * if other person profile, btn that display Follow/UnFollow
 4.~~ Following > page from ALL users followed~~
-    * only signed in users
-    * toggle follow/unfollow
+    ~~* only signed in users~~
+    ~~* toggle follow/unfollow~~
+
 5. Pagination
     display 10 at a time, then after 10, a Next> btn for second page
     * after second page must be 2 btns <Previous||Next>
-6. Edit Posts
-    * user can edit own posts with edit button, then the body of post, replaced with textarea precompiled
-    * save post without refreshing page with JavaScript
-    * be sure anothe user can't edit other user's posts
+~~6. Edit Posts~~
+    ~~* user can edit own posts with edit button, then the body of post, replaced with textarea precompiled~~
+    ~~* save post without refreshing page with JavaScript~~
+    ~~* be sure anothe user can't edit other user's posts~~
 7.~~ Like / Unlike~~
    ~~ w/ javascript asynconously update the like count via fetch, w/o refresh~~ (1,5 days)
 

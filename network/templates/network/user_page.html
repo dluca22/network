@@ -13,7 +13,7 @@
                         <p>picture</p>
                         <p><b>{{profile}}</b>, id = <i>{{profile.id}}</i></p>
 
-                        <p>Followers = {{profile.n_follower}}, Following = {{profile.n_follows}}</p>
+                        <p>Followers = <span class="n_followers">{{profile.n_follower}}</span>, Following = {{profile.n_friends}}</p>
                         {%if profile == user%}
                         <!-- dasboard button only to owner, onclick change bio div to buttons for edit password, name and bio -->
                             <button id="dashboard" class="btn btn-sm btn-dark">Dashboard</button>

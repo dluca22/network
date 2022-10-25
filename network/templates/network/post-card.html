@@ -3,41 +3,53 @@
 <!-- togliere shadow e aggiungerlo come event listener on hover??? -->
 <div class="post-card card border-info mb-3 mx-auto">
     <div class="card-body">
-      <div class="row-fluid d-flex justify-content-around">
+        <!-- header -->
+        <div class="row-fluid d-flex justify-content-around">
             <p class="card-title OP">
                 <!-- username is a link to profile -->
                 <a href="{%url 'user' post.op_id%}">{{post.op}}</a>
             </p>
             <span class="text-muted"><small>{{post.timestamp}}</small></span>
             <button class="history-btn btn btn-success btn-sm">H</button>
+        </div>
+        <!-- /header -->
 
-      </div>
-      <p class="card-text">{{post.text}}</p>
+        <!-- body-text -->
+        <!-- grab card-text first child, set to hidden, replace with edit-text -->
+        <div class="post-body">
+
+            <div class="post-text">{{post.text}}</div>
+        </div>
+
+        <!-- body-text -->
+
     </div>
     <div class="card-footer ">
         <span>Likes (<span class="counter">{{post.n_likes}}</span>)</span>
 
         <!-- if user authenticated can like/dislike -->
         {%if user.is_authenticated%}
-            <!-- TODO set icon -->
-            <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">
-                <!-- if user IS IN qset of people liking  > unlike button-->
-                {%if user in post.liking%}
-                    &lt;/3
-                <!-- if not in people liking, show like button -->
-                {%else%}
-                    &lt;3
-                    <!-- end of button display -->
-                {%endif%}
-            </button>
-            <button class="comment-btn btn btn-info btn-sm">comment</button>
-            {%if request.user == post.op%}
-                <button class="delete-btn btn btn-dark rounded-pill btn-sm">Del</button>
+        <!-- TODO set icon -->
+        <button class="btn btn-danger btn-sm like-btn" value="{{post.id}}">
+            <!-- if user IS IN qset of people liking  > unlike button-->
+            {%if user in post.liking%}
+            &lt;/3
+            <!-- if not in people liking, show like button -->
+            {%else%}
+            &lt;3
+            <!-- end of button display -->
             {%endif%}
+        </button>
+        <button class="comment-btn btn btn-info btn-sm">comment</button>
+        {%if request.user == post.op%}
+        <button class="delete-btn btn btn-dark rounded-pill btn-sm">Del</button>
+        <button class="edit-btn btn btn-secondary rounded-pill btn-sm" value="{{post.id}}">edit</button>
+
+        {%endif%}
         {%else%}
         <!-- else btns greyed out -->
-            <button class="btn btn-secondary btn-sm like-btn" >&lt;3</button>
-            <button class="btn btn-secondary btn-sm">comment</button>
+        <button class="btn btn-secondary btn-sm like-btn">&lt;3</button>
+        <button class="btn btn-secondary btn-sm">comment</button>
 
         {%endif%}
     </div>

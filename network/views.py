@@ -134,10 +134,29 @@ def comment():
     """
     pass
 
-def edit():
+def edit(request):
     """
     edit to a post or a comment, might split this into 2 or give some parameters for context to execute different functions, or might do everything via Js
     """
+    if request.method == "POST":
+        # get data from json request
+        data = json.loads(request.body)
+        # get the new_text cut after 140 if forged
+        new_text = data.get('new_text')[:140]
+        # if new_text not empty
+        if new_text:
+            post_id = data.get('post_id')
+            post = Post.objects.get(id=post_id)
+            post.text = new_text
+            post.save()
+            # save in history
+            return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=206)
+        elif not new_text:
+            return JsonResponse({"message": 'not edited'}, status=200)
+
+    else:
+            return JsonResponse({"error": 'only POST request accepted'}, status=400)
+
     pass
 
 # jsonresponse returns succes 206 meaning only partial data are being sent, also 201 might work, 200 def works, while 204 DOES NOT send back json response datas
@@ -209,8 +228,8 @@ def follow(request):
         profile = User.objects.get(id=profile_id)
         if profile in request.user.friends:
             request.user.follow.remove(profile)
-            return JsonResponse({"msg": "removed"}, status=200)
+            return JsonResponse({"msg": "removed", "n_followers": profile.n_follower}, status=200)
         else:
             request.user.follow.add(profile)
-            return JsonResponse({"msg": "added"}, status=200)
+            return JsonResponse({"msg": "added", "n_followers": profile.n_follower}, status=200)
 
