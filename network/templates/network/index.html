@@ -2,7 +2,7 @@
 
 {% block body %}
 
-<div class="container-fluid justify-content-center">
+<div class="row justify-content-center">
     <!-- colonna 75% pagina centrale -->
     <div class="col-11 col-md-9 col-lg-7 mx-auto">
 
@@ -14,7 +14,7 @@
                 <form id = post_form action="{%url 'post' %}" method="post">
                     {%csrf_token%}
                     {{post_form.text}}
-                    <input type="submit">
+                    <div class="row"><input type="submit" class="btn btn-info mt-n1 rounded"></div>
                 </form>
             </div>
             {%else%}
@@ -22,48 +22,55 @@
             {%endif%}
 
         </section>
+    </div>
+    </div>
         <!-- in teoria linea di separazione -->
 <hr>
-<section class="section-posts">
-        <!-- zona post precendti loop, se empy, error message -->
+
+<div class="row justify-content-center">
+<section class="section-posts col-9 col-md-7 col-lg-5">
+    <!-- zona post precendti loop, se empy, error message -->
     {%for post in page_obj%}
 
-    {% include 'network/post-card.html'%}
+        {% include 'network/post-card.html'%}
 
 
 
-    </div>
 
-    {%empty%}
-    <h3>there are no posts</h3>
-    {%endfor%}
+        {%empty%}
+        <h3>there are no posts</h3>
+        {%endfor%}
+    </section>
+</div>
 
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-end">
+<div class=" container-fluid d-flex justify-content-center">
 
-            <!-- go to first -->
-            <li class="page-item">
-                <a class="page-link" href="?page=1">&laquo;</a>
-            </li>
-            {% if page_obj.has_previous%}
-            <!-- previous page if present -->
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
-                {% endif %}
-                    <!-- current -->
-                    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.number}}</a></li>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end">
 
-                {% if page_obj.has_next %}
-                <!-- next page if present -->
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
-                {% endif %}
-          </ul>
-        </nav>
+                <!-- go to first -->
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo;</a>
+                </li>
+                {% if page_obj.has_previous%}
+                <!-- previous page if present -->
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+                    {% endif %}
+                        <!-- current -->
+                        <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.number}}</a></li>
 
+                    {% if page_obj.has_next %}
+                    <!-- next page if present -->
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                    {% endif %}
+              </ul>
+            </nav>
 
 </div>
 
-</section>
+</div>
+
 
 
 

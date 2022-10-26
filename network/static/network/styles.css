@@ -1,5 +1,6 @@
 body{
-    padding:20px;
+    /* padding:20px; */
+    background-color: rgb(236, 236, 236);
 }
 
 #user-handle{
@@ -10,3 +11,39 @@ body{
     font-size: larger;
     color: blueviolet;
 }
+
+.icon{
+    height: 22px;
+    opacity: 65%;
+}
+.icon:hover{
+    opacity: 95%;
+}
+input[disabled='true']{
+    opacity:15%
+}
+input[disabled='true']:hover{
+    opacity:7%
+}
+.history-btn{
+    position: relative;
+}
+
+.history-card{
+    font-size: 11px;
+    height:8vh;
+    /* position:relative; */
+    position: absolute; top: 20px; right: 20px;
+}
+
+/* other funtion out of scope of the exercise */
+.comment-btn, #dashboard, .bio-col{
+    display:none;
+}
+#id_text{
+    border-width: 3px;
+    border-radius: 5px;
+    border-color: #2e343a;
+}
+.badge{
+    background-color: #a023098c !important;

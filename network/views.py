@@ -160,23 +160,30 @@ def edit(request):
     if request.method == "POST":
         # get data from json request
         data = json.loads(request.body)
-        # get the new_text cut after 140 if forged
-        new_text = data.get('new_text')[:140]
-        # if new_text not empty
-        if new_text:
-            post_id = data.get('post_id')
-            post = Post.objects.get(id=post_id)
+        # get the new_text cut after 140 if forged, strip empty space
+        new_text = data.get('new_text').strip()[:140]
+
+        post_id = data.get('post_id')
+        post = Post.objects.get(id=post_id)
+        # if new_text not empty AND not equal to previous text
+        if new_text and new_text != post.text:
+            History.objects.create(old_text=post.text, post=post)
             post.text = new_text
             post.save()
             # save in history
-            return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=206)
-        elif not new_text:
+            return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=200)
+        else:
             return JsonResponse({"message": 'not edited'}, status=200)
 
     else:
             return JsonResponse({"error": 'only POST request accepted'}, status=400)
 
-    pass
+
+def history(request, post_id):
+
+    history = History.objects.filter(post=post_id)
+    return JsonResponse([h.old_text for h in history], safe=False)
+
 
 # jsonresponse returns succes 206 meaning only partial data are being sent, also 201 might work, 200 def works, while 204 DOES NOT send back json response datas
 def like(request):

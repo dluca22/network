@@ -71,6 +71,12 @@ class Post(models.Model):
     @property
     def n_likes(self):
         return self.like.count()
+    @property
+    def has_history(self):
+        return self.history.count()
+    @property
+    def history(self):
+        return self.history.all()
 
     @property
     def liking(self):
@@ -109,11 +115,20 @@ class History(models.Model):
     # model for history of edits to Post text and Comment text
     id = models.BigAutoField(primary_key=True)
     old_text = models.TextField(max_length=250)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="history")
     # comment_id (would id conflic?? maybe 2 models for CommentHistory and PostHistory)
 
-    pass
+    def __str__(self):
+        return f"post {self.post.id}, {self.old_text}"
 
+
+    @property
+    def serialized(self):
+        return {
+            "id":self.id,
+            "old_text": self.old_text
+        }
+    pass
 # class Like(models.Model):
 #     # model for likes to posts
 #     id = models.BigAutoField(primary_key=True)
