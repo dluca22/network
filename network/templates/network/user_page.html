@@ -1,56 +1,80 @@
 {%extends 'network/layout.html'%}
+{%load static %}
 
 {%block body%}
 <!-- only is_authenticated users can see profiles -->
-    {%if user.is_authenticated%}
-        <!-- if profile returns empty queryset (MIGHT CHANGE IN VIEWS TO 404 PAGE) -->
-        {%if not profile%}
-                <div>This profile doesn't exist</div>
-    <!-- ELSE  if profile exists -->
-        {%else%}
-                <div class="row d-flex justify-content-end mb-4">
-                    <div class="col-4">
-                        <p>picture</p>
-                        <p><b>{{profile}}</b>, id = <i>{{profile.id}}</i></p>
+{%if user.is_authenticated%}
+<!-- if profile returns empty queryset (MIGHT CHANGE IN VIEWS TO 404 PAGE) -->
+{%if not profile%}
+<div class="container-fluid d-flex justify-content-center">
+    <h3>This profile doesn't exist</h3>
+</div>
+<!-- ELSE  if profile exists -->
+{%else%}
+<div class="row d-flex justify-content-center mb-4">
+    <div class="col-5 d-flex justify-content-end align-items-center">
 
-                        <p>Followers = <span class="n_followers">{{profile.n_follower}}</span>, Following = {{profile.n_friends}}</p>
-                        {%if profile == user%}
-                        <!-- dasboard button only to owner, onclick change bio div to buttons for edit password, name and bio -->
-                            <button id="dashboard" class="btn btn-sm btn-dark">Dashboard</button>
-                        {%else%}
-                            {%if profile not in user.friends%}
-                            <button class="follow-btn btn btn-sm btn-success" value="{{profile.id}}">Follow</button>
-                            {%else%}
-                            <button class="follow-btn btn btn-sm btn-warning" value="{{profile.id}}">Unfollow</button>
-                            {%endif%}
-                        {%endif%}
-                    </div>
-                    <!-- colonna nel profilo per bio -->
-                    <div class="col-5 bio-col">
-                        <div id="bio-section">
-                            <p><b>Bio</b></p>
-                            <p>bio placeholder</p>
-                            {%if profile == user%}
-                            <button class="btn btn-sm btn-warning">Edit Bio</button>
-                            {%endif%}
-                        </div>
+        <img src="{%static 'network/icons/user.png'%}" alt="picture">
+        <h2><b>{{profile | capfirst}}</b></h2>
+    </div>
 
-                    </div>
-                    <!-- button to dasboard accessible only if this user is the owner of the profile -->
+    <div class="col-5 d-flex justify-content-start align-items-center">
+        <ul style="list-style:none">
+            <li>Followers: <span class="n_followers">{{profile.n_follower}}</span></li>
+            <li>Following: {{profile.n_friends}}</li>
+            {%if profile != user%}
+            <li>
+                {%if profile not in user.friends%}
+                <button class="follow-btn btn btn-sm btn-success" value="{{profile.id}}">Follow</button>
+                {%else%}
+                <button class="follow-btn btn btn-sm btn-warning" value="{{profile.id}}">Unfollow</button>
+                {%endif%}
+                {%endif%}
+            </li>
+        </ul>
 
-                </div>
 
-                {%for post in posts%}
-                {% include 'network/post-card.html'%}
+    </div>
 
-                {%empty%}
-                <p>there are no posts</p>
-                {%endfor%}
-        <!-- endif user doesn't exist -->
+
+    </div>
+
+    <hr>
+
+<!-- REMOVED colonna nel profilo per bio -->
+<div class="col-5 bio-col">
+    <div id="bio-section">
+        <p><b>Bio</b></p>
+        <p>bio placeholder</p>
+        {%if profile == user%}
+        <button class="btn btn-sm btn-warning">Edit Bio</button>
         {%endif%}
+    </div>
 
-    <!-- non authenticated users see error -->
-    {%else%}
-        <h3>You have to <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'register' %}">Register</a> to see a user's profile</h3>
-    {%endif%}
+</div>
+<!-- REMOVED button to dasboard accessible only if this user is the owner of the profile -->
+
+
+<div class="row justify-content-center mt-4">
+    <section class="section-posts col-9 col-md-7 col-lg-5">
+        <!-- zona post precendti loop, se empy, error message -->
+        {%for post in page_obj%}
+
+            {% include 'network/post-card.html'%}
+
+        {%empty%}
+        <div class="container-fluid d-flex justify-content-center">
+            <h3>There are no posts by {{profile | capfirst}}</h3>
+        </div>
+        {%endfor%}
+        </section>
+    </div>
+<!-- endif user doesn't exist -->
+{%endif%}
+
+<!-- non authenticated users see error -->
+{%else%}
+<h3>You have to <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'register' %}">Register</a> to see a user's
+    profile</h3>
+{%endif%}
 {%endblock%}

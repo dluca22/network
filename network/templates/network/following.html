@@ -4,21 +4,34 @@
 
 
     <!-- if user follows at least one -->
-    {%if user.n_friends > 0%}
-
-        {%for post in posts%}
-            {% include 'network/post-card.html'%}
-        {%empty%}
-            <p>No posts from your followers</p>
-        {%endfor%}
-
-
-    <!-- if user doesn't follow anyone -> message -->
+    {%if not user.n_friends %}
+     <!-- if user doesn't follow anyone -> message -->
+     <div class="container-fluid d-flex justify-content-center">
+         <h3>You are not following any user</h3>
+        </div>
     {%else%}
-        <p>You are not following any user</p>
-    <!-- ENDIF user not following anyone -->
+    <div class="row justify-content-center">
+        <section class="section-posts col-9 col-md-7 col-lg-5">
+            <!-- zona post precendti loop, se empy, error message -->
+            {%for post in page_obj%}
+                {% include 'network/post-card.html'%}
+            {%empty%}
+                <div class="container-fluid d-flex justify-content-center">
+
+                    <h3>
+                    {%for friend in friends%}
+                    <a class="user-profile" href="{%url 'user' friend.id %}">{{friend | capfirst }}</a>, 
+                    {%endfor%}
+                         have not posted yet.</h3>
+
+                </div>
+                {%endfor%}
+            </section>
+        </div>
+
+    <!-- ENDIF user IS following someone -->
     {%endif%}
 
-    
+
 
 {%endblock%}

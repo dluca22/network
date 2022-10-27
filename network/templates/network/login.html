@@ -1,11 +1,13 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+<div class="row justify-content-center">
+<div class="col-7 col-lg-4">
 
     <h2>Login</h2>
 
     {% if message %}
-        <div>{{ message }}</div>
+    <div>{{ message }}</div>
     {% endif %}
 
     <form action="{% url 'login' %}" method="post">
@@ -20,5 +22,7 @@
     </form>
 
     Don't have an account? <a href="{% url 'register' %}">Register here.</a>
-
+</div>
+</div>
 {% endblock %}
+

@@ -2,28 +2,26 @@
 
 {% block body %}
 
-<div class="row justify-content-center">
     <!-- colonna 75% pagina centrale -->
-    <div class="col-11 col-md-9 col-lg-7 mx-auto">
+    <section id="post_section" class= "container ">
+        <div class="row justify-content-center">
+            <div class="col-11 col-md-9 col-lg-7 d-flex flex-column">
 
 
-        <!-- in cima textform per nuovo post -->
-        <section id="post_section">
-            {%if user.is_authenticated%}
-            <div class="container d-flex justify-content-center mb-2">
-                <form id = post_form action="{%url 'post' %}" method="post">
-                    {%csrf_token%}
-                    {{post_form.text}}
-                    <div class="row"><input type="submit" class="btn btn-info mt-n1 rounded"></div>
-                </form>
+                <!-- in cima textform per nuovo post -->
+                {%if user.is_authenticated%}
+                    <form id = post_form action="{%url 'post' %}" method="post" class="d-flex flex-column">
+                        {%csrf_token%}
+                        {{post_form.text}}
+                        <input type="submit" class="btn btn-submit rounded-bottom">
+                    </form>
+                {%else%}
+                <h2>You have to login/register to post</h2>
+                {%endif%}
+
             </div>
-            {%else%}
-            <p>You have to login/register to post</p>
-            {%endif%}
-
-        </section>
-    </div>
-    </div>
+        </div>
+    </section>
         <!-- in teoria linea di separazione -->
 <hr>
 
@@ -38,7 +36,9 @@
 
 
         {%empty%}
-        <h3>there are no posts</h3>
+        <div class="container-fluid d-flex justify-content-center">
+            <h3>there are no posts</h3>
+        </div>
         {%endfor%}
     </section>
 </div>

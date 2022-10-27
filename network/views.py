@@ -1,17 +1,17 @@
-import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+
 from django import forms
 from django.core.paginator import Paginator
 from django.forms import ModelForm
 
-from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import Post, User, History
 
-from .models import *
 
 class CreatePost(ModelForm):
     class Meta:
@@ -19,7 +19,7 @@ class CreatePost(ModelForm):
         fields = ('text',)
     #   widget to manipulate area https://docs.djangoproject.com/en/4.1/ref/forms/widgets/#django.forms.Widget.attrs
         widgets = {
-          'text': forms.Textarea(attrs={'rows':4}),
+          'text': forms.Textarea(attrs={'rows':4, "placeholder":"Post something..."}),
         }
 
 
@@ -28,17 +28,18 @@ class CreatePost(ModelForm):
 def index(request):
     """
     main page is homepage where all posts are shown by all users, no restriction
-    implement as a card the structure with include, that has body, like button, n likes, username, comments, and timestamp as xyz_time_ago, and edit btn, and history show
+    implement as a card the structure with {%include%}
     """
+    # creates the form from ModelForm
     post_form = CreatePost()
 
+    # get all posts reverse order and paginates it
     posts = Post.objects.all().order_by('-id')
     paginator = Paginator(posts, 10)
-
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # posts = [post.serialize() for post in posts]
+    # sends the POST form and the paginator object
     context = {'post_form':post_form, 'page_obj': page_obj }
 
     return render(request, "network/index.html", context=context)
@@ -98,11 +99,11 @@ def register(request):
 @login_required
 def post(request):
     """function to register post by user
-        GET request shows the format of the modelForm
         POST registers the post after processing
         """
     if request.method == 'POST':
         post = CreatePost(request.POST)
+        # if is valid, add owner from request and save
         if post.is_valid():
             post.instance.op = request.user
             post.save()
@@ -112,26 +113,37 @@ def post(request):
 
 
 # not login requried because i added a page section to deal with that in the template
-def user_page(request, id):
+def user_page(request, profile_id):
     """
     user's profile page, both own or another's
-    if own, hide follow btn, show dashboard btn
-    show n people following
-    show n followers
-    show all posts descending order
+    if own, hide follow btn, show dashboard btn (REMOVED)
     """
-    user_posts = Post.objects.filter(op=id).order_by('-id')
-    user_profile = User.objects.filter(id=id).first()
-    print(user_profile)
-    context = {'profile': user_profile, "posts": user_posts}
+    # gets posts whose owner is profile_id
+    try:
+        user = User.objects.get(id=profile_id)
+        user_posts = user.posts.all().order_by('-id')
+    except:
+        # if user doesn't exist pass blak value and triggers error in template
+        user= None
+        user_posts=[]
+
+    # if user exists, paginator formats result
+    paginator = Paginator(user_posts, 10)
+    page_number= request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'profile': user, "page_obj": page_obj}
     return render(request, 'network/user_page.html', context=context)
+
 
 # ajax request as DELETE method to delete the post and send back jsonresponse
 def delete_post(request):
     if request.method == "DELETE":
+        # from the request transformed to json get the post_id and looks in db
         data = json.loads(request.body)
         post_id = data.get('post_id')
         post = Post.objects.get(id=post_id)
+
         # server side checking request user is owner
         if request.user == post.op:
             post.delete()
@@ -139,23 +151,9 @@ def delete_post(request):
         else:
             return JsonResponse({"error":"You are not the post owner"}, status = 403)
 
-
-
-def user_dashboard():
-    """
-    from userpage get access to the dasboard view, where user can change password, delete account, change profile picture, change username, change email
-    """
-    pass
-
-def comment():
-    """
-    comment to one post
-    """
-    pass
-
 def edit(request):
     """
-    edit to a post or a comment, might split this into 2 or give some parameters for context to execute different functions, or might do everything via Js
+    receives ajax request with textarea value and updates the db entry
     """
     if request.method == "POST":
         # get data from json request
@@ -165,27 +163,31 @@ def edit(request):
 
         post_id = data.get('post_id')
         post = Post.objects.get(id=post_id)
+
         # if new_text not empty AND not equal to previous text
         if new_text and new_text != post.text:
+            # if valid, creates a copy of the old text in the History table
             History.objects.create(old_text=post.text, post=post)
+            # updates Post.text and saves
             post.text = new_text
             post.save()
-            # save in history
+
             return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=200)
         else:
             return JsonResponse({"message": 'not edited'}, status=200)
-
     else:
             return JsonResponse({"error": 'only POST request accepted'}, status=400)
 
 
 def history(request, post_id):
+    """
+    from get request retrieves sends list with history of all post's edits
+    """
 
     history = History.objects.filter(post=post_id)
     return JsonResponse([h.old_text for h in history], safe=False)
 
 
-# jsonresponse returns succes 206 meaning only partial data are being sent, also 201 might work, 200 def works, while 204 DOES NOT send back json response datas
 def like(request):
     """
     allows an user to like a post or comment
@@ -198,37 +200,37 @@ def like(request):
         post = Post.objects.get(id=post_id)
         # if user is already liking trigger action and return JsonResponse + msg
         if request.user in post.liking:
-            print("unliked")
             # remove like record
             post.like.remove(request.user)
             return JsonResponse({"message": "unliked", "postLikes": post.n_likes}, status=206)
         else:
-            print("liked")
             # add like record
             post.like.add(request.user)
             return JsonResponse({"message": "liked", "postLikes":post.n_likes}, status=206)
-    # if not POST, return error
+    # jsonresponse returns succes 206 meaning only partial data are being sent, also 201 might work, 200 def works, while 204 DOES NOT send back json response datas
 
-    elif request.method == "GET":
-        liked_posts = request.user.liked.values()
-        print("liked_posts")
-        print(liked_posts)
-        # return JsonResponse({"liked": liked_posts }, status=200)
+    # elif request.method == "GET": ?????????????????????????????
+    #     liked_posts = request.user.liked.values()
+    #     print("liked_posts")
+    #     print(liked_posts)
+    #     # return JsonResponse({"liked": liked_posts }, status=200)
 
-        return JsonResponse({"error": "only GET and PUT requests are accepted."}, status=200)
+    #     return JsonResponse({"error": "only GET and PUT requests are accepted."}, status=200)
 
+    # if not PUT, return error
     else:
-        return JsonResponse({"error": "only GET and PUT requests are accepted."}, status=400)
+        return JsonResponse({"error": "only PUT requests are accepted."}, status=400)
 
     pass
 
 @login_required(login_url="/login")
-def following(request):
+def following_feed(request):
     """
     view to display all posts from people an user follows
     """
 # get qset of friends of user (who user follows)
     friends = request.user.friends
+
 # set dict and for each friend get friend post, if present, append to dict
     friends_posts = []
     for friend in friends:
@@ -238,20 +240,25 @@ def following(request):
             for post in posts:
                 friends_posts.append(post)
 
-    context = {'posts': friends_posts}
-    # context = {'posts':friends_posts}
+    paginator = Paginator(friends_posts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'page_obj': page_obj, "friends":friends}
 
     return render(request, 'network/following.html', context=context)
+
 
 def follow(request):
     """
     allows user to follow another
-    don't know if via django or Js yet
     """
     if request.method == "PUT":
         data= json.loads(request.body)
         profile_id = data.get("profile_id")
         profile = User.objects.get(id=profile_id)
+
+        # if profile already in user's friends, remove, else add and sends new follower count
         if profile in request.user.friends:
             request.user.follow.remove(profile)
             return JsonResponse({"msg": "removed", "n_followers": profile.n_follower}, status=200)
@@ -259,3 +266,18 @@ def follow(request):
             request.user.follow.add(profile)
             return JsonResponse({"msg": "added", "n_followers": profile.n_follower}, status=200)
 
+
+
+def user_dashboard():
+    """
+    OUT OF SCOPE for this pset
+    from userpage get access to the dasboard view, where user can change password, delete account, change profile picture, change username, change email
+    """
+    pass
+
+def comment():
+    """
+    OUT OF SCOPE for this pset
+    comment to one post
+    """
+    pass

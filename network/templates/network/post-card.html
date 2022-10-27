@@ -1,39 +1,40 @@
 {% load static %}
 
 <!-- togliere shadow e aggiungerlo come event listener on hover??? -->
-<div class="post-card card border-info mb-3">
+<div class="post-card card border-dark mb-3">
     <div class="card-body ">
         <!-- header -->
-        <div class="row-fluid d-flex justify-content-around">
-            <p class="card-title OP">
-                <!-- username is a link to profile -->
-                <a href="{%url 'user' post.op_id%}">{{post.op}}</a>
-            </p>
-            <span class="text-muted"><small>{{post.timestamp}}</small></span>
-            {% if post.has_history%}
-            <input type="image" class="history-btn icon" value="{{post.id}}"
-                src="{%static 'network/icons/history.png' %}" alt="history">
+        <div class="row-fluid d-flex justify-content-around ">
 
-            {%else%}
-            <input type="image" class="history-btn icon" value="{{post.id}}"
-                src="{%static 'network/icons/history.png' %}" alt="history" disabled="true">
-
+            <div class="d-flex align-items-baseline mr-auto">
+                <p class="card-title OP">
+                    <!-- username is a link to profile -->
+                    <a class="user-profile" href="{%url 'user' post.op_id%}">{{post.op | capfirst }}</a>
+                </p>
+                <small class="text-muted ms-2">{{post.timestamp}}</small>
+            </div>
+            <div>
+            {%if user == post.op %}
+                <input type="image" class="edit-btn icon" value="{{post.id}}" src="{%static 'network/icons/edit.png' %}"alt="edit">
             {%endif%}
-            <input type="image" class="edit-btn icon" value="{{post.id}}" src="{%static 'network/icons/edit.png' %}"
-                alt="edit">
+            {% if post.has_history%}
+                <input type="image" class="history-btn icon" value="{{post.id}}"src="{%static 'network/icons/history.png' %}" alt="history">
+            {%else%}
+                <input type="image" class="history-btn icon" value="{{post.id}}" src="{%static 'network/icons/history.png' %}" alt="history" disabled="true">
+            {%endif%}
+            </div>
 
         </div>
         <!-- /header -->
 
         <!-- body-text -->
-        <!-- grab card-text first child, set to hidden, replace with edit-text -->
+        <!-- edit() grabs post-body first child, set to hidden, replace with edit text-area -->
         <div class="post-body">
             <div class="post-text">{{post.text}}</div>
         </div>
-
         <!-- body-text -->
-
     </div>
+
     <div class="card-footer container-fluid d-inline-flex justify-content-around ">
         <div class="col-3 d-flex align-items-center">
 
@@ -43,37 +44,30 @@
             {%if user.is_authenticated%}
             <!-- TODO set icon -->
 
-            <!-- if user IS IN qset of people liking  > unlike button-->
-            {%if user in post.liking%}
-            <input type="image" class="like-btn icon" value="{{post.id}}" src="{%static 'network/icons/like.png' %}"
-                style="opacity: 95% ;" alt="like">
+                <!-- if user IS IN qset of people liking  show Un-like (like with more opacity)-->
+                {%if user in post.liking%}
+                    <input type="image" class="like-btn icon" value="{{post.id}}" src="{%static 'network/icons/like.png' %}"style="opacity: 95% ;" alt="like">
 
-            <!-- if not in people liking, show like button -->
-            {%else%}
-            <input type="image" class="like-btn icon" value="{{post.id}}" src="{%static 'network/icons/like.png' %}"
-                alt="like">
+                <!-- if not in people liking, show Like button -->
+                {%else%}
+                    <input type="image" class="like-btn icon" value="{{post.id}}" src="{%static 'network/icons/like.png' %}"alt="like">
 
-            <!-- end of button display -->
-            {%endif%}
-            </button>
-            <input type="image" class="comment-btn icon" value="{{post.id}}"
-                src="{%static 'network/icons/comment.png' %}" alt="comment">
+            <!-- end of active button display -->
+                {%endif%}
+            <!-- <input type="image" class="comment-btn icon" value="{{post.id}}"
+                src="{%static 'network/icons/comment.png' %}" alt="comment"> -->
         </div>
+
         <div class="col-3  d-flex align-items-center">
 
-            {%if request.user == post.op%}
-            <input type="image" class="delete-btn icon" value="{{post.id}}" src="{%static 'network/icons/delete.png' %}"
-                alt="delete">
+                {%if request.user == post.op%}
+                    <input type="image" class="delete-btn icon" value="{{post.id}}" src="{%static 'network/icons/delete.png' %}"alt="delete">
 
-
-            {%endif%}
+                {%endif%}
+            <!-- else USER NOT authenticated > btns disabled out w/o value -->
             {%else%}
-            <!-- else btns greyed out -->
-            <input type="image" class="like-btn icon" value="{{post.id}}"
-                src="{%static 'network/icons/like_greyed.png' %}" alt="like">
-            <input type="image" class="comment-btn icon" value="{{post.id}}"
-                src="{%static 'network/icons/comment_greyed.png' %}" alt="comment">
-
+                <input type="image" class="like-btn icon" src="{%static 'network/icons/like.png' %}" alt="like" disabled="true">
+                <input type="image" class="comment-btn icon" src="{%static 'network/icons/comment.png' %}" alt="comment" disabled="true">
 
             {%endif%}
         </div>

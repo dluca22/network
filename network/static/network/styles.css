@@ -30,7 +30,7 @@ input[disabled='true']:hover{
 }
 
 .history-card{
-    font-size: 11px;
+    
     height:8vh;
     /* position:relative; */
     position: absolute; top: 20px; right: 20px;
@@ -40,10 +40,35 @@ input[disabled='true']:hover{
 .comment-btn, #dashboard, .bio-col{
     display:none;
 }
-#id_text{
+#id_text, textarea[name="edit_area"]{
     border-width: 3px;
     border-radius: 5px;
     border-color: #2e343a;
 }
 .badge{
     background-color: #a023098c !important;
+}
+
+/* user name links style */
+.user-profile{
+    text-decoration: None;
+    color: rgb(136, 36, 0);
+}
+.user-profile:hover{
+    color: orangered;
+}
+/* submit button, reverse of user-profile link (target background-color not color) */
+.btn-submit:hover{
+    background-color: rgb(136, 36, 0);
+}
+.btn-submit{
+    background-color: orangered;
+}
+#edit-section>button{
+    margin:2px;
+    border-radius: 3px;
+    background-color: #2e343a6d;
+    color:rgb(59, 62, 66);
+    border: none;
+
+}
