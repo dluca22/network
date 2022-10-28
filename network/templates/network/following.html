@@ -20,7 +20,7 @@
 
                     <h3>
                     {%for friend in friends%}
-                    <a class="user-profile" href="{%url 'user' friend.id %}">{{friend | capfirst }}</a>, 
+                    <a class="user-profile" href="{%url 'user' friend.id %}">{{friend | capfirst }}</a>,
                     {%endfor%}
                          have not posted yet.</h3>
 
@@ -28,6 +28,33 @@
                 {%endfor%}
             </section>
         </div>
+
+<div class=" container-fluid d-flex justify-content-center">
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end">
+
+            <!-- go to first -->
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo;</a>
+            </li>
+            {% if page_obj.has_previous%}
+            <!-- previous page if present -->
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+                {% endif %}
+                    <!-- current -->
+                    <li class="page-item disabled"><a class="page-link" href="#">{{page_obj.number}}</a></li>
+
+                {% if page_obj.has_next %}
+                <!-- next page if present -->
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                {% endif %}
+          </ul>
+        </nav>
+
+</div>
+
 
     <!-- ENDIF user IS following someone -->
     {%endif%}
