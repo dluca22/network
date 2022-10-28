@@ -44,6 +44,7 @@ On click of the post's history button an async get request is sent to the server
 
 Javascript's behaviour handles the post text's manipulation in a safe way using the node's textContent instead of its innerHTML in order to prevent script injection.
 
+## Conclusion:
 Although the styling of the page is nothing to catch eyes it is simple and uncluttered, it is just a proof of concept to spin up and easy to edit or add functions.
 
 In future iterations for my own interest and study i plan on adding other functions like comments to posts, and user profile customization.
