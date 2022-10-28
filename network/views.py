@@ -185,7 +185,7 @@ def history(request, post_id):
     """
 
     history = History.objects.filter(post=post_id)
-    return JsonResponse([h.old_text for h in history], safe=False)
+    return JsonResponse([h.serialized for h in history], safe=False)
 
 
 def like(request):

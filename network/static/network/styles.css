@@ -30,10 +30,12 @@ input[disabled='true']:hover{
 }
 
 .history-card{
-    
     height:8vh;
     /* position:relative; */
     position: absolute; top: 20px; right: 20px;
+}
+.list-group-item{
+    color:blue;
 }
 
 /* other funtion out of scope of the exercise */

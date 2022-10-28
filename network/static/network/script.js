@@ -309,10 +309,13 @@ function show_history(hist) {
 				const card = build_card();
                 // for each element in the list from data
                 // create list node and sets its textcontent to the element
-				data.forEach((elem) => {
+
+				/* FOR REVERSE  data.slice().reverse().forEach((elem, indx) => { */
+				data.forEach((elem, indx) => {
+
 					let li = document.createElement("li");
 					li.classList.add("list-group-item", "p-1", "justify-content-center");
-					li.innerText = elem;
+					li.innerText = `${indx+1}: ${elem.old_text}`;
 					card.firstChild.append(li);
 
                     //selects the close button of the new card to dismiss the card
