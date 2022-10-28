@@ -164,17 +164,22 @@ def edit(request):
         post_id = data.get('post_id')
         post = Post.objects.get(id=post_id)
 
-        # if new_text not empty AND not equal to previous text
-        if new_text and new_text != post.text:
-            # if valid, creates a copy of the old text in the History table
-            History.objects.create(old_text=post.text, post=post)
-            # updates Post.text and saves
-            post.text = new_text
-            post.save()
+        # handling editing forgery by non original poster
+        if request.user != post.op:
+            return JsonResponse({"unauthorized": "You are NOT allowed to edit other's posts"}, status=401)
 
-            return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=200)
         else:
-            return JsonResponse({"message": 'not edited'}, status=200)
+            # if new_text not empty AND not equal to previous text
+            if new_text and new_text != post.text:
+                # if valid, creates a copy of the old text in the History table
+                History.objects.create(old_text=post.text, post=post)
+                # updates Post.text and saves
+                post.text = new_text
+                post.save()
+
+                return JsonResponse({"message": 'edit saved', "post_text": post.text}, status=200)
+            else:
+                return JsonResponse({"message": 'not edited'}, status=200)
     else:
             return JsonResponse({"error": 'only POST request accepted'}, status=400)
 

@@ -29,8 +29,8 @@ https://cs50.harvard.edu/web/2020/projects/4/network/
 
 
 ## extra
-1. added delete button
-1.5 added confirmation on delete
+~~1. added delete button~~
+~~1.5 added confirmation on delete~~
 
 ## Hints
 

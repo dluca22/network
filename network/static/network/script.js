@@ -228,7 +228,11 @@ function edit_post(edit, post) {
 						} else if (data.message == "not edited") {
 							old_text.style.display = "block";
 							return false;
-						}
+						} else if (data.unauthorized){
+							old_text.textContent = data.unauthorized;
+
+							old_text.style.display = "block";
+                        }
 					});
 			} //end conditional edit_area NOT null, or cancel NOT clicked
 		};
